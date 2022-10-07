@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.sql.SQLOutput;
+import java.util.Random;
 
 public class TestCase1 {
     public static void main(String[] args) throws InterruptedException {
@@ -14,6 +15,7 @@ public class TestCase1 {
         System.setProperty("webdriver.chrome.driver", "/Users/zayasaikhanchuluunbaatar/Downloads/BrowserDriver");
         WebDriver driver = new ChromeDriver();
         driver.get("http://qa-duotify.us-east-2.elasticbeanstalk.com/register.php");
+        driver.manage().window().maximize();
 
         Thread.sleep(1000);
 //        2. Verify the the title is "Welcome to Duotify!"
@@ -26,11 +28,25 @@ public class TestCase1 {
 //        3. Click on Signup here
         driver.findElement(By.id("hideLogin")).click();
 //        4. Fill out the form with the required info
-        driver.findElement(By.name("username")).sendKeys("Username123");
+        //String username = Math.random();
+
+        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        Random rnd = new Random();
+        StringBuilder userName = new StringBuilder(9);
+        for (int i = 0; i < 9; i++)
+            userName.append(chars.charAt(rnd.nextInt(chars.length())));
+
+        StringBuilder email = new StringBuilder(8);
+        for (int i = 0; i < 8; i++)
+            email.append(chars.charAt(rnd.nextInt(chars.length())));
+
+        String email1 = email.toString() + "@gmail.com";
+        driver.findElement(By.name("username")).sendKeys(userName);
         driver.findElement(By.name("firstName")).sendKeys("Duotech");
         driver.findElement(By.name("lastName")).sendKeys("Batch");
-        driver.findElement(By.name("email")).sendKeys("dtacademy6789@gmail.com");
-        driver.findElement(By.name("email2")).sendKeys("dtacademy6789@gmail.com");
+        driver.findElement(By.name("email")).sendKeys(email1);
+        driver.findElement(By.name("email2")).sendKeys(email1);
         driver.findElement(By.name("password")).sendKeys("dtacademy123");
         driver.findElement(By.name("password2")).sendKeys("dtacademy123");
 //        5. Click on Sign up
