@@ -1,5 +1,6 @@
 package AutomationProject2;
 
+import com.github.javafaker.Faker;
 import org.checkerframework.checker.units.qual.K;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -16,65 +17,80 @@ import java.util.Random;
 public class TestCase {
     public static void main(String[] args) {
 //        CREATE A WEB ORDER
-//
-//
+
 //        1. Launch Chrome browser.
 //        2. Navigate to http://secure.smartbearsoftware.com/samples/TestComplete12/WebOrders/Login.aspx
+
         System.setProperty("webdriver.chrome.driver", "/Users/zayasaikhanchuluunbaatar/Downloads/BrowserDriver");
         WebDriver driver = new ChromeDriver();
         driver.get("http://secure.smartbearsoftware.com/samples/TestComplete12/WebOrders/Login.aspx");
         driver.manage().window().maximize();
 
 //        3. Login using username Tester and password test
+
         driver.findElement(By.name("ctl00$MainContent$username")).sendKeys("Tester", Keys.TAB, "test", Keys.ENTER);
+
 //        4. Click on Order link
+
         driver.findElement(By.linkText("Order")).click();
+
 //        5. Enter a random product quantity between 1 and 100
-        int randomNum = (int)(Math.random()*99+1);
-        driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtQuantity")).sendKeys(Keys.BACK_SPACE, String.valueOf(randomNum), Keys.ENTER);
+
+        int quantity = (int)(Math.random()*99+1);
+        driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtQuantity")).sendKeys(Keys.BACK_SPACE, String.valueOf(quantity), Keys.ENTER);
+
 //        6. Click on Calculate and verify that the Total value is correct.
-        //driver.findElement(By.xpath("//input[@type='submit']"));
-//                Price per unit is 100.  The discount of 8 % is applied to quantities of 10+.
+
+        driver.findElement(By.xpath("//input[@type='submit']"));
+
+//        Price per unit is 100.  The discount of 8 % is applied to quantities of 10+.
 //        So for example, if the quantity is 8, the Total should be 800.
 //        If the quantity is 20, the Total should be 1840.
 //        If the quantity is 77, the Total should be 7084. And so on.
-        int totalAfterDiscount = Integer.parseInt(driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtTotal")).getAttribute("value"));
-        int totalBeforeDiscount = randomNum * 100;
-        Assert.assertTrue(totalBeforeDiscount - totalBeforeDiscount*0.08 == totalAfterDiscount);
-//        6. Generate and enter random first name and last name.
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        Random rnd = new Random();
-        StringBuilder firstName = new StringBuilder(6);
-        for (int i = 0; i < 6; i++)
-            firstName.append(chars.charAt(rnd.nextInt(chars.length())));
-        StringBuilder lastName = new StringBuilder(6);
-        for (int i = 0; i < 6; i++)
-            lastName.append(chars.charAt(rnd.nextInt(chars.length())));
 
-        String fullName = firstName + " " + lastName;
-        driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtName")).sendKeys(fullName);
+        if(quantity >= 10){
+
+        int totalAfterDiscount = Integer.parseInt(driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtTotal")).getAttribute("value"));
+        int totalBeforeDiscount = quantity * 100;
+        Assert.assertTrue(totalBeforeDiscount - totalBeforeDiscount*0.08 == totalAfterDiscount);
+
+        } else {
+
+            int totalAfterDiscount = Integer.parseInt(driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtTotal")).getAttribute("value"));
+            int totalBeforeDiscount = quantity * 100;
+            Assert.assertTrue(totalBeforeDiscount == totalAfterDiscount);
+
+        }
+//        6. Generate and enter random first name and last name.
+//
+        Faker fakeName = new Faker();
+        driver.findElement(By.name("ctl00$MainContent$fmwOrder$txtName")).sendKeys(fakeName.name().fullName());
+
 //        7. Generate and Enter random street address
-        String address = (int)(Math.random()* 9999 + 1000) + " Main Rd";
-        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox2")).sendKeys(address);
+
+        Faker fakeAddress = new Faker();
+        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox2")).sendKeys(fakeAddress.address().streetAddress());
+
 //        8. Generate and Enter random city
-        StringBuilder city = new StringBuilder(6);
-        for (int i = 0; i < 6; i++)
-            city.append(chars.charAt(rnd.nextInt(chars.length())));
-        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox3")).sendKeys(city);
+
+        Faker fakeCity = new Faker();
+        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox3")).sendKeys(fakeCity.address().city());
+
 //        9. Generate and Enter random state
-        StringBuilder state = new StringBuilder(2);
-        for (int i = 0; i < 2; i++)
-            state.append(chars.charAt(rnd.nextInt(chars.length())));
-        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox4")).sendKeys(state);
+
+        Faker fakeState = new Faker();
+        driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox4")).sendKeys(fakeState.address().state());
+
 //        10. Generate and Enter a random 5 digit zip code
+
         String zip = "" + (int)(Math.random() * 99999 + 10000);
         driver.findElement(By.name("ctl00$MainContent$fmwOrder$TextBox5")).sendKeys(zip);
 
 //        EXTRA: As an extra challenge, for steps 6-10 download 1000 row of corresponding realistic data from mockaroo.com in a csv format and load it to your program and use the random set of data from there each time.
-//
 //        11. Select the card type randomly. On each run your script should select a random type.
-        List<WebElement> options = driver.findElements(By.xpath("//table[@class='RadioList']")) ;
-        System.out.println(options.size());
+
+
+        List<WebElement> options = driver.findElements(By.xpath("//input[@type='radio']")) ;
         Random random = new Random();
         int index = random.nextInt(options.size());
         options.get(index).click();
